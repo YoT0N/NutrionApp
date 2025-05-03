@@ -28,19 +28,19 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                     AuthUiState.Error("Невірний email або пароль")
                 }
             } catch (e: Exception) {
-                _uiState.value = AuthUiState.Error("Помилка мережі")
+                _uiState.value = AuthUiState.Error("Помилка мережі: ${e.message}")
             }
         }
     }
 }
 
-// Події
+// Події від UI
 sealed class AuthEvent {
     data class Login(val email: String, val password: String) : AuthEvent()
     object NavigateToRegistration : AuthEvent()
 }
 
-// Стан
+// Стан UI
 sealed class AuthUiState {
     object Idle : AuthUiState()
     object Loading : AuthUiState()

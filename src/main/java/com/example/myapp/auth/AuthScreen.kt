@@ -10,20 +10,37 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.material3.rememberTopAppBarState
 import com.example.myapp.Screen
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthScreen(navController: NavController) {
+    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(AuthRepository()))
+    val uiState by viewModel.uiState.collectAsState()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    // Обробка станів
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is AuthUiState.Success -> navController.navigate(Screen.Main.route)
+            is AuthUiState.NavigateToRegistration -> navController.navigate(Screen.Registration.route)
+            is AuthUiState.Error -> {
+                // Можна показати Snackbar з помилкою
+                (uiState as AuthUiState.Error).message.let { errorMessage ->
+                    // Реалізація показу помилки (наприклад, через Snackbar)
+                }
+            }
+            else -> Unit
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -31,7 +48,10 @@ fun AuthScreen(navController: NavController) {
                 title = { Text("Авторизація") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Назад"
+                        )
                     }
                 }
             )
@@ -64,20 +84,37 @@ fun AuthScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate(Screen.Main.route) },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { viewModel.onEvent(AuthEvent.Login(email, password)) },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState != AuthUiState.Loading
             ) {
-                Text("Увійти")
+                if (uiState == AuthUiState.Loading) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+                } else {
+                    Text("Увійти")
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             TextButton(
-                onClick = { navController.navigate(Screen.Registration.route) },
+                onClick = { viewModel.onEvent(AuthEvent.NavigateToRegistration) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Реєстрація")
             }
         }
+    }
+}
+
+// Проста фабрика для ViewModel
+class AuthViewModelFactory(private val repository: AuthRepository) :
+    ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AuthViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

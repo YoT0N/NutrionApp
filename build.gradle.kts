@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
 }
 
 android {
@@ -56,6 +57,10 @@ dependencies {
     implementation(libs.android.material3.window.size)
     // Додаємо стару бібліотеку матеріального дизайну для сумісності
     implementation("com.google.android.material:material:1.10.0")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
     implementation(libs.androidx.foundation.android)
 
     // Navigation

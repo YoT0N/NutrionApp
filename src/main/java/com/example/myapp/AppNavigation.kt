@@ -9,6 +9,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.myapp.auth.AuthScreen
 import androidx.navigation.navArgument
+import com.example.myapp.auth.RegistrationScreen
+import com.example.myapp.home.MainScreen
+import com.example.myapp.meal_details.MealDetailScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
