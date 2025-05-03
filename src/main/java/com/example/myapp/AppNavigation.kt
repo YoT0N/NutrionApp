@@ -1,5 +1,7 @@
 package com.example.myapp
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -7,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.myapp.auth.AuthScreen
 import androidx.navigation.navArgument
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -21,13 +24,7 @@ fun AppNavigation() {
         composable(Screen.Profile.route) { ProfileScreen(navController) }
         composable(Screen.MealPlan.route) { MealPlanScreen(navController) }
         composable(Screen.NutritionStats.route) { NutritionStatsScreen(navController) }
-        composable(
-            route = Screen.MealDetail.route,
-            arguments = listOf(navArgument("mealId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val mealId = backStackEntry.arguments?.getString("mealId") ?: ""
-            MealDetailScreen(navController, mealId)
-        }
+
     }
 }
 

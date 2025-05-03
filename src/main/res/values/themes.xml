@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Базовий стиль для Material 3 -->
-    <style name="Theme.MyApp" parent="Theme.Material3.Light.NoActionBar">
+    <!-- Базовий стиль для застосунку -->
+    <style name="Theme.MyApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary color -->
-        <item name="android:colorPrimary">@color/purple_500</item>
-        <item name="android:colorPrimaryContainer">@color/purple_200</item>
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary color -->
-        <item name="android:colorSecondary">@color/teal_200</item>
-        <item name="android:colorSecondaryContainer">@color/teal_700</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color -->
-        <item name="android:statusBarColor">?android:attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/purple_700</item>
     </style>
 </resources>

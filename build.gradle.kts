@@ -48,47 +48,33 @@ dependencies {
     // Compose BOM (Bill of Materials)
     implementation(platform(libs.androidx.compose.bom))
 
-    // Compose
+    // Compose UI
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-
-    // Обов'язково додайте ці дві залежності для Material 3
     implementation(libs.androidx.material3)
-    implementation(libs.android.material3.window.size) // Якщо є у вашому libs.versions.toml
+    implementation(libs.android.material3.window.size)
+    // Додаємо стару бібліотеку матеріального дизайну для сумісності
+    implementation("com.google.android.material:material:1.10.0")
+    implementation(libs.androidx.foundation.android)
 
     // Navigation
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-
-    // Places API (переконайтеся, що це потрібно)
-    implementation(libs.places)
-    implementation(libs.cronet.embedded)
-
-    // Foundation (необов'язково, якщо не використовуєте)
-    implementation(libs.androidx.foundation.android)
-
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Places API
     implementation(libs.places)
     implementation(libs.cronet.embedded)
-    implementation(libs.androidx.foundation.android)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
