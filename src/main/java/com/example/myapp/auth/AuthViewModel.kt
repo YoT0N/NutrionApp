@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
+class AuthViewModel(
+    private val authRepository: AuthRepository,
+    private val sharedViewModel: SharedViewModel
+) : ViewModel() {
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState
 
@@ -14,6 +17,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         when (event) {
             is AuthEvent.Login -> login(event.email, event.password)
             AuthEvent.NavigateToRegistration -> _uiState.value = AuthUiState.NavigateToRegistration
+            AuthEvent.Logout -> logout()
         }
     }
 
@@ -21,30 +25,37 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             try {
-                val isSuccess = authRepository.login(email, password)
-                _uiState.value = if (isSuccess) {
-                    AuthUiState.Success
+                val userResult = authRepository.login(email, password)
+                if (userResult != null) {
+                    sharedViewModel.setUser(email, userResult.id)
+                    _uiState.value = AuthUiState.Success(email)
                 } else {
-                    AuthUiState.Error("Невірний email або пароль")
+                    _uiState.value = AuthUiState.Error("Невірний email або пароль")
                 }
             } catch (e: Exception) {
-                _uiState.value = AuthUiState.Error("Помилка мережі: ${e.message}")
+                _uiState.value = AuthUiState.Error("Помилка авторизації: ${e.message}")
             }
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch {
+            sharedViewModel.clearUser()
+            _uiState.value = AuthUiState.Idle
         }
     }
 }
 
-// Події від UI
 sealed class AuthEvent {
     data class Login(val email: String, val password: String) : AuthEvent()
     object NavigateToRegistration : AuthEvent()
+    object Logout : AuthEvent()
 }
 
-// Стан UI
 sealed class AuthUiState {
     object Idle : AuthUiState()
     object Loading : AuthUiState()
-    object Success : AuthUiState()
+    data class Success(val email: String) : AuthUiState()
     object NavigateToRegistration : AuthUiState()
     data class Error(val message: String) : AuthUiState()
 }

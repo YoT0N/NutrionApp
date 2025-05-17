@@ -3,52 +3,95 @@ package com.example.myapp
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapp.auth.AuthScreen
 import androidx.navigation.navArgument
+import com.example.myapp.auth.AuthScreen
 import com.example.myapp.auth.RegistrationScreen
+import com.example.myapp.auth.SharedViewModel
 import com.example.myapp.home.MainScreen
-import com.example.myapp.meal_details.MealDetailScreen
+import com.example.myapp.meal_edit.MealEditScreen
+import com.example.myapp.profile.ProfileScreen
+import com.example.myapp.settings.SettingsViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(settingsViewModel: SettingsViewModel) {
     val navController = rememberNavController()
+
+    val sharedViewModel: SharedViewModel = viewModel()
 
     NavHost(
         navController = navController,
         startDestination = Screen.Auth.route
     ) {
-        composable(Screen.Auth.route) { AuthScreen(navController) }
-        composable(Screen.Registration.route) { RegistrationScreen(navController) }
-        composable(Screen.Main.route) { MainScreen(navController) }
-        composable(Screen.Profile.route) { ProfileScreen(navController) }
-        composable(Screen.MealPlan.route) { MealPlanScreen(navController) }
-        composable(Screen.NutritionStats.route) { NutritionStatsScreen(navController) }
+        composable(Screen.Auth.route) {
+            AuthScreen(navController, sharedViewModel)
+        }
+
+        composable(Screen.Registration.route) {
+            RegistrationScreen(navController)
+        }
+
+        composable(Screen.Main.route) {
+            MainScreen(navController, sharedViewModel)
+        }
+
+        composable(Screen.MealPlan.route) {
+            MealPlanScreen(navController, sharedViewModel)
+        }
+
+        composable(Screen.NutritionStats.route) {
+            NutritionStatsScreen(navController)
+        }
+
         composable(
-            route = Screen.MealDetail.route,
-            arguments = listOf(navArgument("mealId") { type = NavType.StringType })
+            route = Screen.MealEdit.route,
+            arguments = listOf(navArgument("mealId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
         ) { backStackEntry ->
-            val mealId = backStackEntry.arguments?.getString("mealId") ?: ""
-            MealDetailScreen(navController, mealId)
+            val mealId = backStackEntry.arguments?.getString("mealId")
+            MealEditScreen(
+                navController = navController,
+                mealId = mealId,
+                onSaveComplete = {
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("MEAL_UPDATED", true)
+                }
+            )
+        }
+
+        composable(
+            route = Screen.Profile.route,
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { _ ->
+            ProfileScreen(
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                settingsViewModel = settingsViewModel
+            )
         }
     }
 }
 
-// Hard-coded перевірка авторизації
-fun isUserLoggedIn(): Boolean = false
-
-// Екрани додатку
 sealed class Screen(val route: String) {
     object Auth : Screen("auth")
     object Registration : Screen("registration")
     object Main : Screen("main")
-    object Profile : Screen("profile")
-    object MealPlan : Screen("meal_plan")  // Новий екран для плану харчування
-    object NutritionStats : Screen("nutrition_stats")  // Екран статистики
-    object MealDetail : Screen("meal_detail/{mealId}") {
-        fun createRoute(mealId: String) = "meal_detail/$mealId"
-    }}
+    object Profile : Screen("profile/{email}") {
+        fun createRoute(email: String): String = "profile/$email"
+    }
+    object MealPlan : Screen("meal_plan")
+    object NutritionStats : Screen("nutrition_stats")
+
+    object MealEdit : Screen("meal_edit/{mealId}") {
+        fun createRoute(mealId: String?) = if (mealId != null) "meal_edit/$mealId" else "meal_edit/null"
+    }
+}

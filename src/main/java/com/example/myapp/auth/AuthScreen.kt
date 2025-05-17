@@ -12,30 +12,46 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapp.Screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.myapp.database.AppDatabase
+import com.example.myapp.settings.StringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AuthScreen(navController: NavController) {
-    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(AuthRepository()))
+fun AuthScreen(
+    navController: NavController,
+    sharedViewModel: SharedViewModel
+) {
+    val context = LocalContext.current
+    val database = remember { AppDatabase.getDatabase(context) }
+    val authRepository = remember { AuthRepository(database.userDao()) }
+    val strings = StringResource.strings
+
+    val viewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(authRepository, sharedViewModel)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // Обробка станів
     LaunchedEffect(uiState) {
         when (uiState) {
-            is AuthUiState.Success -> navController.navigate(Screen.Main.route)
+            is AuthUiState.Success -> {
+                val email = (uiState as AuthUiState.Success).email
+                navController.navigate(Screen.Main.route) {
+                    popUpTo(Screen.Auth.route) { inclusive = true }
+                }
+            }
             is AuthUiState.NavigateToRegistration -> navController.navigate(Screen.Registration.route)
             is AuthUiState.Error -> {
-                // Можна показати Snackbar з помилкою
                 (uiState as AuthUiState.Error).message.let { errorMessage ->
-                    // Реалізація показу помилки (наприклад, через Snackbar)
                 }
             }
             else -> Unit
@@ -45,12 +61,12 @@ fun AuthScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Авторизація") },
+                title = { Text(strings.auth) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Назад"
+                            contentDescription = strings.back
                         )
                     }
                 }
@@ -67,7 +83,7 @@ fun AuthScreen(navController: NavController) {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email") },
+                label = { Text(strings.email) },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -76,7 +92,7 @@ fun AuthScreen(navController: NavController) {
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Пароль") },
+                label = { Text(strings.password) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -91,7 +107,7 @@ fun AuthScreen(navController: NavController) {
                 if (uiState == AuthUiState.Loading) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
                 } else {
-                    Text("Увійти")
+                    Text(strings.login)
                 }
             }
 
@@ -101,19 +117,21 @@ fun AuthScreen(navController: NavController) {
                 onClick = { viewModel.onEvent(AuthEvent.NavigateToRegistration) },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Реєстрація")
+                Text(strings.dontHaveAccount)
             }
         }
     }
 }
 
 // Проста фабрика для ViewModel
-class AuthViewModelFactory(private val repository: AuthRepository) :
-    ViewModelProvider.Factory {
+class AuthViewModelFactory(
+    private val authRepository: AuthRepository,
+    private val sharedViewModel: SharedViewModel
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return AuthViewModel(repository) as T
+            return AuthViewModel(authRepository, sharedViewModel) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

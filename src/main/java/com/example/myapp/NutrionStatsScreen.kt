@@ -11,20 +11,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NutritionStatsScreen(navController: NavController) {
+    val calendar = Calendar.getInstance()
+    // Встановлюємо на початок тижня (понеділок)
+    while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+        calendar.add(Calendar.DAY_OF_MONTH, -1)
+    }
+
     val weeklyStats = remember {
-        listOf(
-            NutritionDay("Понеділок", 1800, 2000),
-            NutritionDay("Вівторок", 1750, 2000),
-            NutritionDay("Середа", 1950, 2000),
-            NutritionDay("Четвер", 1600, 2000),
-            NutritionDay("П'ятниця", 2100, 2000),
-            NutritionDay("Субота", 2200, 2200),
-            NutritionDay("Неділя", 1850, 2000)
-        )
+        val days = mutableListOf<NutritionDay>()
+        val dayNames = listOf("Понеділок", "Вівторок", "Середа", "Четвер", "П'ятниця", "Субота", "Неділя")
+
+        for (i in 0..6) {
+            val date = calendar.time
+            val consumed = when (i) {
+                0 -> 1800
+                1 -> 1750
+                2 -> 1950
+                3 -> 1600
+                4 -> 2100
+                5 -> 2200
+                6 -> 1850
+                else -> 0
+            }
+            val goal = if (i == 5) 2200 else 2000
+
+            days.add(NutritionDay(dayNames[i], date, consumed, goal))
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
+        days
     }
 
     Scaffold(
@@ -52,6 +71,7 @@ fun NutritionStatsScreen(navController: NavController) {
         }
     }
 }
+
 
 @Composable
 fun WeeklyCaloriesChart(stats: List<NutritionDay>) {
@@ -126,8 +146,3 @@ fun AverageNutritionStats(stats: List<NutritionDay>) {
     }
 }
 
-data class NutritionDay(
-    val dayName: String,
-    val consumed: Int,
-    val goal: Int
-)

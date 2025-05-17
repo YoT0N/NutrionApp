@@ -7,4 +7,22 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="splash_background">#37D444</color>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <!-- Кольори для відображення різниці калорій -->
+    <color name="balance_positive">#4CAF50</color>
+    <color name="balance_negative">#F44336</color>
+    <color name="balance_neutral">#9E9E9E</color>
+
+    <!-- Стандартні кольори Material Design -->
+
+    <color name="gray_light">#F5F5F5</color>
+    <color name="gray">#9E9E9E</color>
+
+    <!-- Кольори для стовпчиків графіка -->
+    <color name="chart_column">#4CAF50</color>
+    <color name="chart_column_background">#E8F5E9</color>
 </resources>

@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">MyApp</string>
+
+    <!-- NutritionStats екран -->
+    <string name="nutrition_stats_title">Статистика харчування</string>
+    <string name="weekly_calories_chart">Калорії за тиждень</string>
+    <string name="average_stats">Середні показники</string>
+    <string name="consumed">Спожито:</string>
+    <string name="recommended">Рекомендовано:</string>
+    <string name="balance">Баланс:</string>
+    <string name="kcal_per_day">%1$d ккал/день</string>
+    <string name="daily_details">Деталі по днях</string>
+    <string name="kcal">%1$d ккал</string>
+    <string name="kcal_of">з %1$d ккал</string>
+    <string name="balance_format">Баланс: %1$d ккал</string>
+    <string name="back">Назад</string>
+
+    <!-- Назви днів тижня -->
+    <string name="monday">Понеділок</string>
+    <string name="tuesday">Вівторок</string>
+    <string name="wednesday">Середа</string>
+    <string name="thursday">Четвер</string>
+    <string name="friday">П\'ятниця</string>
+    <string name="saturday">Субота</string>
+    <string name="sunday">Неділя</string>
 </resources>
