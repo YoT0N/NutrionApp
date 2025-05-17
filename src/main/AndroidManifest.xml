@@ -23,12 +23,7 @@
             </intent-filter>
         </activity>
          <activity
-            android:name=".NutritionStatsActivity"
-            android:label="@string/nutrition_stats_title"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
+        android:name=".NutritionStatsActivity"
+        android:exported="false" />
     </application>
 </manifest>

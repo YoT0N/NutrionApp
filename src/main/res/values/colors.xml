@@ -23,6 +23,5 @@
     <color name="gray">#9E9E9E</color>
 
     <!-- Кольори для стовпчиків графіка -->
-    <color name="chart_column">#4CAF50</color>
     <color name="chart_column_background">#E8F5E9</color>
 </resources>

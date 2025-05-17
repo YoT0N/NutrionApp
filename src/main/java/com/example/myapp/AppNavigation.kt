@@ -1,8 +1,11 @@
 package com.example.myapp
 
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -45,7 +48,14 @@ fun AppNavigation(settingsViewModel: SettingsViewModel) {
         }
 
         composable(Screen.NutritionStats.route) {
-            NutritionStatsScreen(navController)
+            // Замість відображення Compose екрану запускаємо Activity з XML-лейаутом
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                val intent = Intent(context, NutritionStatsActivity::class.java)
+                context.startActivity(intent)
+                // Повертаємося назад, щоб кнопка "назад" в NutritionStatsActivity повертала до MainScreen
+                navController.popBackStack()
+            }
         }
 
         composable(
