@@ -15,10 +15,3 @@ sealed class SettingsEvent {
     data class ChangeLanguage(val language: String) : SettingsEvent()
     data class ChangeUiDensity(val density: String) : SettingsEvent()
 }
-
-// Define keys for DataStore
-object SettingsKeys {
-    val DARK_THEME_ENABLED = booleanPreferencesKey("dark_theme_enabled")
-    val LANGUAGE = stringPreferencesKey("language")
-    val UI_DENSITY = stringPreferencesKey("ui_density")
-}
